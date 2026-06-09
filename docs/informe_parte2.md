@@ -145,21 +145,25 @@ def descenso_gradiente(f, x0, lr, tol=1e-6, max_iter=1000):
 
 Las funciones de prueba y sus extremos esperados:
 
-| Función                   | Extremo teórico                      | xn esperado | f(xn) esperado |
-| ------------------------- | ------------------------------------ | ----------- | -------------- |
-| `f1 = x²`                 | mínimo global                        | x = 0       | f = 0          |
-| `f2 = (x+0.5)³ − (x+0.5)` | mínimo local (con `[−1,1]` / `x0=1`) | x ≈ 0.0774  | f ≈ −0.3849    |
-| `f3 = −cos(x)`            | mínimo local                         | x = 0       | f = −1         |
+| Función                   | Extremo teórico | xn esperado (bisección/Newton) | xn esperado (descenso) |
+| ------------------------- | --------------- | ------------------------------ | ---------------------- |
+| `f1 = x²`                 | mínimo global   | x = 0,  f = 0                  | x = 0,  f = 0          |
+| `f2 = (x+0.5)³ − (x+0.5)` | mínimo local   | x ≈ 0.0774, f ≈ −0.3849        | x ≈ 0.0774, f ≈ −0.3849 |
+| `f3 = cos(x)`             | máximo en x=0 (bisección/Newton) · mínimo en x=π (descenso) | x = 0, f = 1 | x ≈ π, f = −1 |
+
+**Nota sobre `f3 = cos(x)`:** bisección en `[−1, 1]` y Newton desde `x0=1` encuentran la raíz de `f'(x)=−sin(x)` más cercana a sus condiciones iniciales, que es el **máximo** en `x=0`. El descenso por gradiente, en cambio, sigue la dirección `−f'(x) = sin(x)` desde `x0=1`, que apunta hacia `x=π` (donde `f` decrece), y converge al **mínimo global** en `x=π`. Los tres resultados son extremos válidos de `cos(x)`.
 
 Resultados obtenidos (tolerancia `1e-6`):
 
-| Función           | Bisección `[a,b]=[−1,1]`    | Newton `x0=1`              | Descenso `x0=1, lr=1e-2`     |
-| ----------------- | --------------------------- | -------------------------- | ---------------------------- |
-| `f1 = x²`         | xn = 0.000000 **(1 iter)**  | xn = 0.000000 **(2 iter)** | xn ≈ 0.000048 **(492 iter)** |
-| `f2 = (x+0.5)³−…` | xn = 0.077350 **(21 iter)** | xn = 0.077350 **(6 iter)** | xn ≈ 0.077378 **(278 iter)** |
-| `f3 = −cos(x)`    | xn = 0.000000 **(1 iter)**  | xn = 0.000000 **(5 iter)** | xn ≈ 0.000098 **(927 iter)** |
+| Función           | Bisección `[a,b]=[−1,1]`    | Newton `x0=1`              | Descenso `x0=1, lr=1e-2`        |
+| ----------------- | --------------------------- | -------------------------- | -------------------------------- |
+| `f1 = x²`         | xn = 0.000000 **(1 iter)**  | xn = 0.000000 **(2 iter)** | xn ≈ 0.000048 **(492 iter)**     |
+| `f2 = (x+0.5)³−…` | xn = 0.077350 **(21 iter)** | xn = 0.077350 **(6 iter)** | xn ≈ 0.077378 **(278 iter)**     |
+| `f3 = cos(x)`     | xn = 0.000000 **(1 iter)**  | xn = 0.000000 **(5 iter)** | xn ≈ 3.141433 **(1000 iter) †**  |
 
-Todos los métodos convergen al extremo correcto en los tres casos. Newton es consistentemente el más rápido; bisección es eficiente cuando la raíz cae exactamente en el punto medio; descenso por gradiente es el más lento pero no requiere ni intervalo ni segunda derivada.
+† El descenso alcanza xn≈π con f(xn)=−1 (mínimo global correcto), pero el paso final es ligeramente superior a `tol=1e-6`, por lo que agota el límite de iteraciones sin activar el criterio de convergencia. El resultado es correcto; solo la velocidad es insuficiente para esta tolerancia.
+
+Los tres métodos producen extremos correctos en todos los casos. Que bisección/Newton y descenso encuentren extremos distintos en `f3` ilustra directamente la respuesta a la pregunta 2.3: los métodos no eligen entre máximo y mínimo, convergen al extremo que determinan sus condiciones iniciales.
 
 ---
 
